@@ -269,18 +269,30 @@ void ADS1115_ADC::updateConfig(const ConfigShift shift, const ConfigMask mask,
 }
 
 Status ADS1115_ADC::writeRegister(const Register reg, const uint16_t value) {
+  if (_hsEnabled) {
+    _i2c.beginTransmission(0x00);
+    _i2c.write(0x08);
+    _i2c.endTransmission(false); // activate HS mode
+  }
+
   _i2c.beginTransmission(static_cast<uint8_t>(_address));
   _i2c.write(static_cast<uint8_t>(reg));
   _i2c.write(static_cast<uint8_t>(value >> 8));
   _i2c.write(static_cast<uint8_t>(value & 0xFF));
-  return static_cast<Status>(_i2c.endTransmission());
+  return static_cast<Status>(_i2c.endTransmission()); // STOP -> HS mode off
 }
 
 Status ADS1115_ADC::readRegister(const Register reg, uint16_t& value) {
+  if (_hsEnabled) {
+    _i2c.beginTransmission(0x00);
+    _i2c.write(0x08);
+    _i2c.endTransmission(false); // activate HS mode
+  }
+
   _i2c.beginTransmission(static_cast<uint8_t>(_address));
   _i2c.write(static_cast<uint8_t>(reg));
 
-  Status status = static_cast<Status>(_i2c.endTransmission());
+  Status status = static_cast<Status>(_i2c.endTransmission(false)); // keep HS mode active
   if (status != Status::Ok) return status;
 
   const uint8_t bytes = 2;
@@ -296,5 +308,13 @@ Status ADS1115_ADC::readRegister(const Register reg, uint16_t& value) {
 uint8_t ADS1115_ADC::readBits(const uint16_t value, const ConfigMask mask,
                               const ConfigShift shift) {
   return (value & static_cast<uint16_t>(mask)) >> static_cast<uint8_t>(shift);
+}
+
+void ADS1115_ADC::enableHighSpeedMode() {
+  _hsEnabled = true;
+}
+
+void ADS1115_ADC::disableHighSpeedMode() {
+  _hsEnabled = false;
 }
 } // namespace ADS1115

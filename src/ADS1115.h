@@ -308,6 +308,17 @@ class ADS1115_ADC {
    */
   float convertToVoltage(const int16_t value);
 
+  /**
+   * @brief Enable high speed mode. This will unlimit the I2C clock speed up to 3.4MHz (theoretically).
+   * It disables the STOP condition after each transmission.
+   */
+  void enableHighSpeedMode();
+
+  /**
+   * @brief Disable high speed mode. This restores the STOP condition after each transmission.
+   */
+  void disableHighSpeedMode();
+
   private:
   enum class Register : uint8_t {
     Conversion,
@@ -349,6 +360,7 @@ class ADS1115_ADC {
   TwoWire& _i2c;
   uint16_t _config;
   Pga _pga;
+  bool _hsEnabled = false;
 
   static constexpr float _fsr_0_256 = 0.256 / 32767.0;
   static constexpr float _fsr_0_512 = 0.512 / 32767.0;
