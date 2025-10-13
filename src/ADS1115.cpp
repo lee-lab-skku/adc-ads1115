@@ -318,4 +318,5 @@ Status ADS1115_ADC::enableHighSpeedMode() {
 Status ADS1115_ADC::disableHighSpeedMode() {
   _hsEnabled = false;
   return Status::Ok;
+}
 } // namespace ADS1115
