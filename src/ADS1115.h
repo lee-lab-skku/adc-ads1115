@@ -309,19 +309,15 @@ class ADS1115_ADC {
   float convertToVoltage(const int16_t value);
 
   /**
-   * @brief Enable high speed mode. This will reduce the I2C clock speed to 100kHz and disable the
-   * STOP condition after each transmission. This is useful when using the ADS1115 at high data rates
-   * (SPS_250 and above).
-   * @return Status Status code
+   * @brief Enable high speed mode. This will unlimit the I2C clock speed up to 3.4MHz (theoretically).
+   * It disables the STOP condition after each transmission.
    */
-  Status enableHighSpeedMode();
+  void enableHighSpeedMode();
 
   /**
-   * @brief Disable high speed mode. This will restore the I2C clock speed to 400kHz and enable the
-   * STOP condition after each transmission.
-   * @return Status Status code
+   * @brief Disable high speed mode. This restores the STOP condition after each transmission.
    */
-  Status disableHighSpeedMode();
+  void disableHighSpeedMode();
 
   private:
   enum class Register : uint8_t {
